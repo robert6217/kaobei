@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}
+Kaobei
+{% endblock %}
+{% block container %}
+<div class="row">
+  <div class="col s5">
+    <div class="collection">
+      {% for items in rank_list %}
+        <a href="/{{ items.FansPageID }}/1" class="collection-item">
+          <span class="badge">Rank {{ loop.index }}</span>
+          <img src="{{ items.KaobeiPicture }}" alt="{{ items.FansPageID }}" height="42" width="42">{{ items.KaobeiName }}
+        </a>
+      {% endfor%}
+    </div>
+  </div>
+  <div class="col s7">
+    <h3>靠北排行榜</h3>
+    {% for post in top_five %}
+      <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2F{{post.PageID}}%2Fposts%2F{{post.PostID}}%2F&width=500&show_text=true&appId=1849561911971322&height=326" width="500" height="326" style="border:none;overflow:hidden" scrolling="yes" frameborder="0" allowTransparency="true" allow="encrypted-media"></iframe>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

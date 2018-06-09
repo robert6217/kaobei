@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Kaobei{% endblock %}
+{% block container %}
+<h1>Hello, {{ kid|title }}!</h1>
+<center>
+    {% for data in kaobedata_pages.items %}
+    	{% if kid == data.PageID %}
+      		<iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2F{{data.PageID}}%2Fposts%2F{{data.PostID}}%2F&width=500&show_text=true&appId=1849561911971322&height=326" width="500" height="326" style="border:none;overflow:hidden" scrolling="yes" frameborder="0" allowTransparency="true" allow="encrypted-media"></iframe>
+    	{% endif %}
+    {% endfor %}
+     <ul class="pagination">
+	    {% for page in kaobedata_pages.iter_pages() %}
+	    	{% if page %}
+	    		<li class="waves-effect" id="page{{page}}"><a href="{{ url_for( 'kaobeifans',kid=kid, page_num=page) }}">{{ page }}</a></li>
+	    	{% else %}
+	    	...
+	    	{% endif %}
+	    {% endfor %}
+	</ul>
+</center>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#page{{ kaobedata_pages.page }}").addClass("active");
+		if({{kaobedata_pages.has_next}} == true){
+			$('#next_page').removeClass("disabled");
+		}
+		if({{kaobedata_pages.has_prev}} == true){
+			$('#pre_page').removeClass("disabled");
+		}
+	});
+</script>
+{% endblock %}

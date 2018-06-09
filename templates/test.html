@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="../static/javascripts/echarts.common.min.js"></script>
+</head>
+<style type="text/css">
+  select {
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #f2f2f2;
+  border-radius: 2px;
+  height: 3rem;
+}
+.select-label {
+  position: absolute;
+}
+
+.select-wrapper {
+  position: relative;
+}
+</style>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+<script type="text/javascript">
+var myChart = echarts.init(document.getElementById('main')); var option = { series: [{ name: '访问来源', type: 'pie', radius: '55%', data: [ { value: 79379, name: '靠北工程師' }, { value: 35393, name: '靠北女友' }, { value: 29572, name: '靠北男友' }, { value: 11304, name: '靠北數字模' }, { value: 9866, name: '靠北旅遊業' }, { value: 5742, name: '靠北健身界' }, { value: 5168, name: '靠北警專' }, { value: 4876, name: '靠北淡江' }, { value: 2755, name: '靠北清大' }, { value: 2446, name: '靠北&amp;八卦英雄聯盟' }, { value: 2212, name: '靠北北大' }, { value: 1706, name: '靠北交大' }, { value: 1701, name: '靠北輔大 Cow Bei FJU' }, { value: 1590, name: '靠北淡商Cow Bei TSVS' }, { value: 1199, name: '靠北．師大' }, ] }] }; myChart.setOption(option);
+</script>
+<select>
+  <option >123</option>
+  <option style="display: none;">465</option>
+</select>
+</body>
+</html>
