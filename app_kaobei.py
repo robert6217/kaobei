@@ -3,7 +3,7 @@ from datetime import datetime
 from dbKaobei import *
 import datetime
 TODAY = datetime.date.today()
-INTHREEDAYS = datetime.timedelta(days = 3)
+INTHREEDAYS = datetime.timedelta(days = 2)
 app = Flask(__name__)
 
 def get_KaobeiID():
@@ -27,13 +27,14 @@ def index():
         total_comment = 0
         total_share   = 0
         totalrank     = 0
+        count = KaobeiData.query.filter_by(PageID = _id.FansPageID).count()
         datainfo = KaobeiID.query.filter_by(FansPageID=_id.FansPageID).first()
         for info in datainfo.pages:
             total_like    += info.PostLike*1
             total_comment += info.PostComment*1.5
             total_share   += info.PostShare*2
-            rank = total_like + total_comment + total_share
-            KaobeiID_dic['Rank']      = rank
+        totalrank = (total_like + total_comment + total_share)/count
+        KaobeiID_dic['Rank']      = totalrank
         KaobeiID_dic['FansPageID']    = _id.FansPageID
         KaobeiID_dic['KaobeiName']    = _id.KaobeiName
         KaobeiID_dic['KaobeiPicture'] = _id.KaobeiPicture
@@ -50,27 +51,25 @@ def index():
         total_comment = 0
         total_share   = 0
         total         = 0
-
         posttime = _data.PostTime.date()
         if (posttime + INTHREEDAYS) >= TODAY:
             total_like    = _data.PostLike*1
             total_comment = _data.PostComment*1.5
             total_share   = _data.PostShare*2
-            total = total_like + total_comment + total_share
+            total = (total_like + total_comment + total_share)/4.5
             KaobeiData_dic['Rank']     = total
             KaobeiData_dic['PageID']   = _data.PageID
             KaobeiData_dic['PostID']   = _data.PostID
             KaobeiData_dic['PostTime'] = posttime
             KaobeiData_list.append(KaobeiData_dic)
             KaobeiData_dic = {}
-    #post_weight = KaobeiData_list.sort(key=lambda k: (k.get('Rank', 0)), reverse=True)
-    post_weight = sorted(KaobeiData_list, key = lambda e:e.__getitem__('Rank'), reverse=True)
-    top_five = post_weight[:5]
+    top_five = sorted(KaobeiData_list, key = lambda e:e.__getitem__('Rank'), reverse=True)
+    top_five = top_five[:5]
     return render_template('index.html', **locals())
 
 @app.route('/<kid>/<int:page_num>')
 def kaobeifans(kid, page_num):
-    kaobedata_pages = KaobeiData.query.filter_by(PageID=kid).order_by(KaobeiData.PostTime.desc()).paginate(per_page=10, page=page_num, error_out=True)
+    kaobedata_pages = KaobeiData.query.filter_by(PageID=kid).order_by(KaobeiData.PostTime.desc()).paginate(per_page=5, page=page_num, error_out=True)
     pageid_list  = []
     kaobedata_all = get_KaobeiData()
     for info in kaobedata_all:
@@ -79,9 +78,19 @@ def kaobeifans(kid, page_num):
     if kid not in pageid_list:
         kid = None
     return render_template("kaobeifans.html", kid=kid, kaobedata_pages=kaobedata_pages)
+
 @app.route('/graph')
 def echart():
     kaobeiid = get_KaobeiID()
+    post_count = {}
+    post_list  = []
+    for kid in kaobeiid:
+       post_count['count'] = KaobeiData.query.filter_by(PageID = kid.FansPageID).count()
+       post_count['name']  = kid.KaobeiName
+       post_list.append(post_count)
+       post_count = {}
+    post_list = sorted(post_list, key = lambda e:e.__getitem__('count'), reverse=True)
+
     rank_weight_dic  = {}
     rank_weight_list = []
     rank_unweight_dic  = {}
@@ -96,6 +105,7 @@ def echart():
         un_rank_share   = 0
         rank_weight     = 0
         rank_unweight   = 0
+        count = KaobeiData.query.filter_by(PageID = item.FansPageID).count()
         datainfo = KaobeiID.query.filter_by(FansPageID=item.FansPageID).first()
         for info in datainfo.pages:
             rank_like    += info.PostLike*1
@@ -104,10 +114,10 @@ def echart():
             un_rank_like    += info.PostLike
             un_rank_comment += info.PostComment
             un_rank_share   += info.PostShare
-            rank_weight = rank_like + rank_comment + rank_share
-            rank_unweight = un_rank_like + un_rank_comment + un_rank_share
-            rank_weight_dic['Rank']   = rank_weight
-            rank_unweight_dic['Rank'] = rank_unweight
+        rank_weight = (rank_like + rank_comment + rank_share)/count
+        rank_unweight = (un_rank_like + un_rank_comment + un_rank_share)/count
+        rank_weight_dic['Rank']   = rank_weight
+        rank_unweight_dic['Rank'] = rank_unweight
         rank_weight_dic['KaobeiName']   = item.KaobeiName
         rank_unweight_dic['KaobeiName'] = item.KaobeiName
         rank_weight_list.append(rank_weight_dic)
