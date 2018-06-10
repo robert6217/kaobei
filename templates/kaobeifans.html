@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Kaobei{% endblock %}
 {% block container %}
-<h1>Hello, {{ kid|title }}!</h1>
 <center>
     {% for data in kaobedata_pages.items %}
     	{% if kid == data.PageID %}
